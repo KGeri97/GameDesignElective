@@ -9,14 +9,21 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float moveSpeed;
     [SerializeField] float movementMultiplier;
     [SerializeField] float airMultiplier;
+    [SerializeField] Transform orientation;
 
     Vector2 movement;
     Vector3 moveDirection;
+    Vector3 slopeMoveDirection;
+
+    RaycastHit slopeHit;
 
     [Header("Jump")]
-
     [SerializeField] float jumpForce;
+
+    [Header("Ground Detection")]
+    [SerializeField] LayerMask groundMask;
     bool isGrounded;
+    float groundDistance = 0.4f;
 
     [Header("Drag")]
     [SerializeField] float groundDrag;
@@ -41,7 +48,7 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        isGrounded = Physics.Raycast(transform.position, Vector3.down, playerHeight / 2 + 0.1f);
+        isGrounded = Physics.CheckSphere(transform.position - new Vector3(0, 1, 0), groundDistance, groundMask);
         GatherInput();
         ControlDrag();
 
@@ -49,6 +56,8 @@ public class PlayerMovement : MonoBehaviour
         {
             Jump();
         }
+
+        slopeMoveDirection = Vector3.ProjectOnPlane(moveDirection, slopeHit.normal);
     }
 
     private void FixedUpdate()
@@ -60,14 +69,18 @@ public class PlayerMovement : MonoBehaviour
     {
         movement = moveAction.ReadValue<Vector2>();
 
-        moveDirection = transform.forward * movement.y + transform.right * movement.x;
+        moveDirection = orientation.forward * movement.y + orientation.right * movement.x;
     }
 
     void MovePlayer()
     {
-        if (isGrounded)
+        if (isGrounded && !OnSlope())
         {
             rb.AddForce(moveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
+        }
+        else if (isGrounded && OnSlope())
+        {
+            rb.AddForce(slopeMoveDirection.normalized * moveSpeed * movementMultiplier, ForceMode.Acceleration);
         }
         else if (!isGrounded)
         {
@@ -75,9 +88,25 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    private bool OnSlope()
+    {
+        if (Physics.Raycast(transform.position, Vector3.down, out slopeHit, playerHeight / 2 + 0.5f))
+        {
+            if (slopeHit.normal != Vector3.up)
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        return false;
+    }
+
     void Jump()
     {
-        rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+        rb.AddForce(transform.up * jumpForce, ForceMode.VelocityChange);
     }
 
     void ControlDrag()
