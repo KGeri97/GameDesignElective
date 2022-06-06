@@ -13,10 +13,12 @@ public class PlayerCamera : MonoBehaviour
 
     [Header("Look")]
     [SerializeField] Transform orientation;
-    [SerializeField] [Range(0, 10)] float xSensitivity;
-    [SerializeField] [Range(0, 10)] float ySensitivity;
+    [SerializeField] [Range(0, 1)] float xSensitivity;
+    [SerializeField] [Range(0, 1)] float ySensitivity;
+    [SerializeField] float gamepadMultiplier;
     float xRotation;
     float yRotation;
+    bool isGamepad;
 
     private void Awake()
     {
@@ -33,6 +35,8 @@ public class PlayerCamera : MonoBehaviour
         GatherInput();
         UpdateCameraPosition();
         LookPlayer();
+
+        SwitchController();
     }
 
     void UpdateCameraPosition()
@@ -42,8 +46,17 @@ public class PlayerCamera : MonoBehaviour
 
     void LookPlayer()
     {
-        xRotation += look.y * ySensitivity * Time.deltaTime;
-        yRotation += look.x * xSensitivity * Time.deltaTime;
+
+        if (isGamepad)
+        {
+            xRotation += look.y * ySensitivity * gamepadMultiplier * 10 * Time.deltaTime;
+            yRotation += look.x * xSensitivity * gamepadMultiplier * 10 * Time.deltaTime;
+        }
+        else
+        {
+            xRotation += look.y * ySensitivity * 10 * Time.deltaTime;
+            yRotation += look.x * xSensitivity * 10 * Time.deltaTime;
+        }
 
         xRotation = Mathf.Clamp(xRotation, -90, 90);
 
@@ -59,5 +72,13 @@ public class PlayerCamera : MonoBehaviour
     void GatherInput()
     {
         look = lookAction.ReadValue<Vector2>();
+    }
+
+    void SwitchController()
+    {
+        if (playerInput.currentControlScheme == "Gamepad")
+            isGamepad = true;
+        else
+            isGamepad = false;
     }
 }

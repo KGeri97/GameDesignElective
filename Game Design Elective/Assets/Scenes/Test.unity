@@ -1078,8 +1078,9 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetPosition: {fileID: 1053467217}
   orientation: {fileID: 578162887}
-  xSensitivity: 5
-  ySensitivity: 5
+  xSensitivity: 0.7
+  ySensitivity: 0.7
+  gamepadMultiplier: 40
 --- !u!4 &1878908683
 Transform:
   m_ObjectHideFlags: 0
