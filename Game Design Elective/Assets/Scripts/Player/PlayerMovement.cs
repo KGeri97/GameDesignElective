@@ -36,23 +36,32 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] Transform leftWallCheck;
     [SerializeField] Transform rightWallCheck;
     [SerializeField] float wallRunSpeed;
+    [SerializeField][Range(0, 90)] float offWallJumpAngle;
+    [SerializeField] float offWallJumpForce;
+    [SerializeField] LayerMask wallkMask;
+    bool leftWall;
+    bool rightWall;
+    bool wallRunning;
+    bool firstTimeReset = true;
 
     void Awake()
     {
         playerInput = GetComponent<PlayerInput>();
         rb = GetComponent<Rigidbody>();
 
-        mapControls();
+        MapControls();
     }
 
     private void Update()
     {
         GatherInput();
 
-        isGrounded();
+        IsGrounded();
         ControlDrag();
 
         Jump();
+        ResetJump();
+        WallRun();
     }
 
     void FixedUpdate()
@@ -64,12 +73,16 @@ public class PlayerMovement : MonoBehaviour
     void MovePlayer()
     {
         moveDirection = orientation.forward * move.y + orientation.right * move.x;
-        transform.rotation = orientation.rotation;
+        moveDirection = moveDirection * moveSpeed * 10;
 
-        if (grounded)
-            rb.AddForce(moveDirection.normalized * moveSpeed * 10, ForceMode.Force);
-        else if (!grounded)
-            rb.AddForce(moveDirection.normalized * moveSpeed * 10 * airMultiplier, ForceMode.Force);
+        if (!grounded)
+            moveDirection = moveDirection * airMultiplier;
+
+        if (!wallRunning)
+        {
+            transform.rotation = orientation.rotation;
+            rb.AddForce(moveDirection.x, rb.velocity.y, moveDirection.z, ForceMode.Force);
+        }
     }
 
     void Jump()
@@ -81,11 +94,69 @@ public class PlayerMovement : MonoBehaviour
 
             rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
         }
-        else if (!jump.IsPressed())
-            canJump = true;
     }
 
-    void isGrounded()
+    void WallRun()
+    {
+        leftWall = Physics.OverlapSphere(leftWallCheck.position, 0.1f, wallkMask).Length > 0;
+        rightWall = Physics.OverlapSphere(rightWallCheck.position, 0.1f, wallkMask).Length > 0;
+
+        if (!grounded && (leftWall || rightWall) && jump.IsPressed() && canJump)
+        {
+            RaycastHit hit = default;
+
+            if (leftWall)
+            {
+                Physics.Raycast(leftWallCheck.position, -orientation.right, out hit, 0.1f, wallkMask);
+            }
+            else if (rightWall)
+            {
+                Physics.Raycast(rightWallCheck.position, orientation.right, out hit, 0.1f, wallkMask);
+            }
+
+            StartWallRun(hit);
+        }
+        else if (!leftWall && !rightWall)
+        {
+            StopWallRun();
+        }
+    }
+
+    void StartWallRun(RaycastHit hit)
+    {
+        if (firstTimeReset)
+        {
+            firstTimeReset = false;
+            canJump = false;
+        }
+
+        if (!wallRunning)
+            wallRunning = true;
+
+        Vector3 wallRunDirection = Vector3.ProjectOnPlane(orientation.forward, hit.normal);
+
+        rb.useGravity = false;
+        rb.velocity = wallRunDirection.normalized * wallRunSpeed;
+
+        if (canJump && jump.IsPressed())
+        {
+            canJump = false;
+            Vector3 jumpAngle = hit.normal * (90 - offWallJumpAngle) + Vector3.up * offWallJumpAngle;
+            rb.AddForce(jumpAngle.normalized * offWallJumpForce, ForceMode.Impulse);
+        }
+    }
+
+    void StopWallRun()
+    {
+        firstTimeReset = true;
+
+        if (wallRunning)
+            wallRunning = false;
+
+        rb.useGravity = true;
+    }
+
+    void IsGrounded()
     {
         grounded = Physics.OverlapSphere(groundCheckTransform.position, 0.1f, groundMask).Length > 0;
     }
@@ -101,15 +172,25 @@ public class PlayerMovement : MonoBehaviour
     void ControlSpeed()
     {
         Vector3 currentVelocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+        float tempSpeed = moveSpeed;
 
-        if (currentVelocity.magnitude > moveSpeed)
+        if (wallRunning)
+            tempSpeed = wallRunSpeed;
+
+        if (currentVelocity.magnitude > tempSpeed)
         {
-            currentVelocity = currentVelocity.normalized * moveSpeed;
+            currentVelocity = currentVelocity.normalized * tempSpeed;
             rb.velocity = new Vector3(currentVelocity.x, rb.velocity.y, currentVelocity.z);
         }
     }
 
-    void mapControls()
+    void ResetJump()
+    {
+        if (!jump.IsPressed())
+            canJump = true;
+    }
+
+    void MapControls()
     {
         moveAction = playerInput.actions["Move"];
         lookAction = playerInput.actions["Look"];
