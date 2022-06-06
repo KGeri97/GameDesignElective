@@ -977,7 +977,7 @@ MonoBehaviour:
   groundDrag: 5
   groundMask:
     serializedVersion: 2
-    m_Bits: 64
+    m_Bits: 192
   jumpForce: 8
   extraGravity: 2
   leftWallCheck: {fileID: 1569287266}
@@ -1079,8 +1079,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetPosition: {fileID: 1053467217}
   orientation: {fileID: 578162887}
-  xSensitivity: 0.7
-  ySensitivity: 0.7
+  xSensitivity: 0.4
+  ySensitivity: 0.4
   gamepadMultiplier: 40
 --- !u!4 &1878908683
 Transform:
