@@ -17,13 +17,19 @@ public class PlayerMovement : MonoBehaviour
 
     RaycastHit slopeHit;
 
+    [Header("Sprinting")]
+    [SerializeField] float walkSpeed;
+    [SerializeField] float sprintSpeed;
+    [SerializeField] float acceleration;
+
     [Header("Jump")]
     [SerializeField] float jumpForce;
 
     [Header("Ground Detection")]
+    [SerializeField] Transform groundCheck;
     [SerializeField] LayerMask groundMask;
     bool isGrounded;
-    float groundDistance = 0.4f;
+    float groundDistance = 0.1f;
 
     [Header("Drag")]
     [SerializeField] float groundDrag;
@@ -34,6 +40,7 @@ public class PlayerMovement : MonoBehaviour
     private PlayerInput playerInput;
     private InputAction moveAction;
     private InputAction jumpAction;
+    private InputAction sprintAction;
 
     Rigidbody rb;
     float playerHeight = 2f;
@@ -48,9 +55,10 @@ public class PlayerMovement : MonoBehaviour
 
     private void Update()
     {
-        isGrounded = Physics.CheckSphere(transform.position - new Vector3(0, 1, 0), groundDistance, groundMask);
+        isGrounded = Physics.CheckSphere(groundCheck.position, groundDistance, groundMask) && Mathf.Abs(rb.velocity.y) < 1f;
         GatherInput();
         ControlDrag();
+        ControlSpeed();
 
         if (jumpAction.IsPressed() && isGrounded)
         {
@@ -106,6 +114,7 @@ public class PlayerMovement : MonoBehaviour
 
     void Jump()
     {
+        rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
         rb.AddForce(transform.up * jumpForce, ForceMode.VelocityChange);
     }
 
@@ -121,11 +130,23 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
+    void ControlSpeed()
+    {
+        if (sprintAction.IsPressed() && isGrounded && moveSpeed < sprintSpeed && movement.y > 0)
+        {
+            moveSpeed = Mathf.Lerp(moveSpeed, sprintSpeed, acceleration * Time.deltaTime);
+        } else if (sprintAction.IsPressed() || movement.y <= 0)
+        {
+            moveSpeed = Mathf.Lerp(moveSpeed, walkSpeed, acceleration * Time.deltaTime);
+        }
+    }
+
     void MapControls()
     {
         playerInput = GetComponent<PlayerInput>();
             
         moveAction = playerInput.actions["Move"];
         jumpAction = playerInput.actions["Jump"];
+        sprintAction = playerInput.actions["Sprint"];
     }
 }
