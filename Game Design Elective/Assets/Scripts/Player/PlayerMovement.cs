@@ -30,6 +30,7 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Jump")]
     [SerializeField] float jumpForce;
+    [SerializeField] float extraGravity;
     bool canJump;
 
     [Header("Wallrun")]
@@ -89,10 +90,15 @@ public class PlayerMovement : MonoBehaviour
     {
         if (jump.IsPressed() && canJump && grounded)
         {
-            rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.y);
+            rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
             canJump = false;
 
-            rb.AddForce(transform.up * jumpForce, ForceMode.Impulse);
+            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+        }
+
+        if (!grounded && !wallRunning)
+        {
+            rb.AddForce(Vector3.down * extraGravity, ForceMode.Force);
         }
     }
 

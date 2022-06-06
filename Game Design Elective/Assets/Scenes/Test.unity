@@ -642,7 +642,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1034482136}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 13.67, y: 5, z: 22.5}
+  m_LocalPosition: {x: 18.56, y: 5, z: 22.5}
   m_LocalScale: {x: 10, y: 10, z: 1}
   m_Children: []
   m_Father: {fileID: 1358202073}
@@ -978,12 +978,13 @@ MonoBehaviour:
   groundMask:
     serializedVersion: 2
     m_Bits: 64
-  jumpForce: 6
+  jumpForce: 8
+  extraGravity: 2
   leftWallCheck: {fileID: 1569287266}
   rightWallCheck: {fileID: 1229773173}
   wallRunSpeed: 6
-  offWallJumpAngle: 49.8
-  offWallJumpForce: 7
+  offWallJumpAngle: 55
+  offWallJumpForce: 10
   wallkMask:
     serializedVersion: 2
     m_Bits: 128
@@ -1123,7 +1124,7 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1888207639}
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 24.06, y: 5, z: 31.14}
+  m_LocalPosition: {x: 25.79, y: 5, z: 29.1}
   m_LocalScale: {x: 10, y: 10, z: 1}
   m_Children: []
   m_Father: {fileID: 1358202073}
