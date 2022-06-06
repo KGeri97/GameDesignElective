@@ -55,7 +55,7 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                     ""initialStateCheck"": true
                 },
                 {
-                    ""name"": ""Sprint"",
+                    ""name"": ""Dash"",
                     ""type"": ""Button"",
                     ""id"": ""6fada3b7-cd2c-4ce9-8c11-af85b6c8db4f"",
                     ""expectedControlType"": ""Button"",
@@ -182,7 +182,7 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Sprint"",
+                    ""action"": ""Dash"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 },
@@ -193,7 +193,7 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": """",
-                    ""action"": ""Sprint"",
+                    ""action"": ""Dash"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
                 }
@@ -229,7 +229,7 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
         m_Game_Move = m_Game.FindAction("Move", throwIfNotFound: true);
         m_Game_Jump = m_Game.FindAction("Jump", throwIfNotFound: true);
         m_Game_Look = m_Game.FindAction("Look", throwIfNotFound: true);
-        m_Game_Sprint = m_Game.FindAction("Sprint", throwIfNotFound: true);
+        m_Game_Dash = m_Game.FindAction("Dash", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -292,7 +292,7 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
     private readonly InputAction m_Game_Move;
     private readonly InputAction m_Game_Jump;
     private readonly InputAction m_Game_Look;
-    private readonly InputAction m_Game_Sprint;
+    private readonly InputAction m_Game_Dash;
     public struct GameActions
     {
         private @PlayerController m_Wrapper;
@@ -300,7 +300,7 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
         public InputAction @Move => m_Wrapper.m_Game_Move;
         public InputAction @Jump => m_Wrapper.m_Game_Jump;
         public InputAction @Look => m_Wrapper.m_Game_Look;
-        public InputAction @Sprint => m_Wrapper.m_Game_Sprint;
+        public InputAction @Dash => m_Wrapper.m_Game_Dash;
         public InputActionMap Get() { return m_Wrapper.m_Game; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -319,9 +319,9 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                 @Look.started -= m_Wrapper.m_GameActionsCallbackInterface.OnLook;
                 @Look.performed -= m_Wrapper.m_GameActionsCallbackInterface.OnLook;
                 @Look.canceled -= m_Wrapper.m_GameActionsCallbackInterface.OnLook;
-                @Sprint.started -= m_Wrapper.m_GameActionsCallbackInterface.OnSprint;
-                @Sprint.performed -= m_Wrapper.m_GameActionsCallbackInterface.OnSprint;
-                @Sprint.canceled -= m_Wrapper.m_GameActionsCallbackInterface.OnSprint;
+                @Dash.started -= m_Wrapper.m_GameActionsCallbackInterface.OnDash;
+                @Dash.performed -= m_Wrapper.m_GameActionsCallbackInterface.OnDash;
+                @Dash.canceled -= m_Wrapper.m_GameActionsCallbackInterface.OnDash;
             }
             m_Wrapper.m_GameActionsCallbackInterface = instance;
             if (instance != null)
@@ -335,9 +335,9 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                 @Look.started += instance.OnLook;
                 @Look.performed += instance.OnLook;
                 @Look.canceled += instance.OnLook;
-                @Sprint.started += instance.OnSprint;
-                @Sprint.performed += instance.OnSprint;
-                @Sprint.canceled += instance.OnSprint;
+                @Dash.started += instance.OnDash;
+                @Dash.performed += instance.OnDash;
+                @Dash.canceled += instance.OnDash;
             }
         }
     }
@@ -356,6 +356,6 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
         void OnMove(InputAction.CallbackContext context);
         void OnJump(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
-        void OnSprint(InputAction.CallbackContext context);
+        void OnDash(InputAction.CallbackContext context);
     }
 }
