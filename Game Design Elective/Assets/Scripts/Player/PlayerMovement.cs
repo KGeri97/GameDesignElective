@@ -11,27 +11,39 @@ public class PlayerMovement : MonoBehaviour
     PlayerInput playerInput;
     InputAction moveAction;
     Vector2 move;
-    InputAction lookAction;
-    Vector2 look;
     InputAction jump;
+    InputAction slide;
     InputAction dash;
 
-    [Header("Movement")]
+    [Header("Run")]
     [SerializeField] float moveSpeed;
-    [SerializeField] float airMultiplier;
+    [SerializeField] float groundDrag;
+    [SerializeField] float maxSpeedReductionRate;
     [SerializeField] Transform orientation;
     Vector3 moveDirection;
-
-    [Header("Ground")]
-    [SerializeField] Transform groundCheckTransform;
-    [SerializeField] float groundDrag;
-    [SerializeField] LayerMask groundMask;
-    bool grounded;
 
     [Header("Jump")]
     [SerializeField] float jumpForce;
     [SerializeField] float extraGravity;
+    [SerializeField] float airMultiplier;
     bool canJump;
+
+    [Header("Slide")]
+    [SerializeField] float slideMinDrag;
+    [SerializeField] float slideMaxDrag;
+    [SerializeField] float slideDragChangeSpeed;
+    [SerializeField] float slideHeightMultiplier;
+    [SerializeField] float slideSpeedLowThreshold;
+    bool sliding = false;
+    CapsuleCollider coll;
+
+    [Header("Dash")]
+    [SerializeField] float dashSpeed;
+    [SerializeField] float dashDuration;
+    [SerializeField] float dashCooldown;
+    [SerializeField] bool directionalDash;
+    bool canDash = true;
+    bool dashing = false;
 
     [Header("Wallrun")]
     [SerializeField] Transform leftWallCheck;
@@ -45,10 +57,16 @@ public class PlayerMovement : MonoBehaviour
     bool wallRunning;
     bool firstTimeReset = true;
 
+    [Header("Ground")]
+    [SerializeField] Transform groundCheckTransform;
+    [SerializeField] LayerMask groundMask;
+    bool grounded;
+
     void Awake()
     {
         playerInput = GetComponent<PlayerInput>();
         rb = GetComponent<Rigidbody>();
+        coll = GetComponent<CapsuleCollider>();
 
         MapControls();
     }
@@ -62,6 +80,8 @@ public class PlayerMovement : MonoBehaviour
 
         Jump();
         ResetJump();
+        Slide();
+        Dash();
         WallRun();
     }
 
@@ -101,13 +121,56 @@ public class PlayerMovement : MonoBehaviour
             rb.AddForce(Vector3.down * extraGravity, ForceMode.Force);
         }
     }
+    
+    void Slide()
+    {
+        if (slide.IsPressed() && grounded && !sliding && !dashing && rb.velocity.magnitude > slideSpeedLowThreshold)
+        {
+            rb.drag = slideMinDrag;
+            sliding = true;
+            coll.height *= slideHeightMultiplier;
+        }
+        else if (sliding && (rb.velocity.magnitude < slideSpeedLowThreshold || jump.IsPressed()))
+        {
+            sliding = false;
+            coll.height /= slideHeightMultiplier;
+        }
+    }
+
+    void Dash()
+    {
+        if (dash.IsPressed() && canDash && !wallRunning && !sliding)
+        {
+            dashing = true;
+            canDash = false;
+
+            if (!directionalDash)
+                rb.velocity = orientation.forward.normalized * dashSpeed;
+            else
+                rb.velocity = Vector3.Normalize(orientation.forward * move.y + orientation.right * move.x) * dashSpeed;
+
+            Invoke("StopDash", dashDuration);
+            Invoke("ResetDash", dashDuration + dashCooldown);
+        }
+    }
+
+    void StopDash()
+    {
+        dashing = false;
+        rb.velocity = rb.velocity.normalized * moveSpeed;
+    }
+
+    void ResetDash()
+    {
+        canDash = true;
+    }
 
     void WallRun()
     {
         leftWall = Physics.OverlapSphere(leftWallCheck.position, 0.1f, wallkMask).Length > 0;
         rightWall = Physics.OverlapSphere(rightWallCheck.position, 0.1f, wallkMask).Length > 0;
 
-        if (!grounded && (leftWall || rightWall) && jump.IsPressed() && canJump)
+        if (!grounded && (leftWall || rightWall) && !dashing && jump.IsPressed() && canJump)
         {
             RaycastHit hit = default;
 
@@ -169,7 +232,9 @@ public class PlayerMovement : MonoBehaviour
 
     void ControlDrag()
     {
-        if (grounded)
+        if (sliding && rb.drag < slideMaxDrag)
+            rb.drag += slideDragChangeSpeed * Time.deltaTime;
+        else if (grounded)
             rb.drag = groundDrag;
         else
             rb.drag = 0;
@@ -183,9 +248,9 @@ public class PlayerMovement : MonoBehaviour
         if (wallRunning)
             tempSpeed = wallRunSpeed;
 
-        if (currentVelocity.magnitude > tempSpeed)
+        if (!dashing && currentVelocity.magnitude > tempSpeed)
         {
-            currentVelocity = currentVelocity.normalized * tempSpeed;
+            currentVelocity -= currentVelocity * maxSpeedReductionRate * Time.deltaTime;
             rb.velocity = new Vector3(currentVelocity.x, rb.velocity.y, currentVelocity.z);
         }
     }
@@ -199,14 +264,13 @@ public class PlayerMovement : MonoBehaviour
     void MapControls()
     {
         moveAction = playerInput.actions["Move"];
-        lookAction = playerInput.actions["Look"];
         jump = playerInput.actions["Jump"];
         dash = playerInput.actions["Dash"];
+        slide = playerInput.actions["Slide"];
     }
 
     void GatherInput()
     {
         move = moveAction.ReadValue<Vector2>();
-        look = lookAction.ReadValue<Vector2>();
     }
 }

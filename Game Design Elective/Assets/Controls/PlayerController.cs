@@ -62,6 +62,15 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Slide"",
+                    ""type"": ""Button"",
+                    ""id"": ""d4a96cc0-2747-490e-bc1e-f38df336628b"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -196,6 +205,28 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                     ""action"": ""Dash"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""7968e972-c703-43cf-a41c-69f7ae6a5e64"",
+                    ""path"": ""<Keyboard>/leftCtrl"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""PC"",
+                    ""action"": ""Slide"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bd364f5b-8b4c-4b4c-8678-617a6744b215"",
+                    ""path"": ""<Gamepad>/rightStickPress"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Slide"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -236,6 +267,7 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
         m_Game_Jump = m_Game.FindAction("Jump", throwIfNotFound: true);
         m_Game_Look = m_Game.FindAction("Look", throwIfNotFound: true);
         m_Game_Dash = m_Game.FindAction("Dash", throwIfNotFound: true);
+        m_Game_Slide = m_Game.FindAction("Slide", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -299,6 +331,7 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
     private readonly InputAction m_Game_Jump;
     private readonly InputAction m_Game_Look;
     private readonly InputAction m_Game_Dash;
+    private readonly InputAction m_Game_Slide;
     public struct GameActions
     {
         private @PlayerController m_Wrapper;
@@ -307,6 +340,7 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
         public InputAction @Jump => m_Wrapper.m_Game_Jump;
         public InputAction @Look => m_Wrapper.m_Game_Look;
         public InputAction @Dash => m_Wrapper.m_Game_Dash;
+        public InputAction @Slide => m_Wrapper.m_Game_Slide;
         public InputActionMap Get() { return m_Wrapper.m_Game; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -328,6 +362,9 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                 @Dash.started -= m_Wrapper.m_GameActionsCallbackInterface.OnDash;
                 @Dash.performed -= m_Wrapper.m_GameActionsCallbackInterface.OnDash;
                 @Dash.canceled -= m_Wrapper.m_GameActionsCallbackInterface.OnDash;
+                @Slide.started -= m_Wrapper.m_GameActionsCallbackInterface.OnSlide;
+                @Slide.performed -= m_Wrapper.m_GameActionsCallbackInterface.OnSlide;
+                @Slide.canceled -= m_Wrapper.m_GameActionsCallbackInterface.OnSlide;
             }
             m_Wrapper.m_GameActionsCallbackInterface = instance;
             if (instance != null)
@@ -344,6 +381,9 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                 @Dash.started += instance.OnDash;
                 @Dash.performed += instance.OnDash;
                 @Dash.canceled += instance.OnDash;
+                @Slide.started += instance.OnSlide;
+                @Slide.performed += instance.OnSlide;
+                @Slide.canceled += instance.OnSlide;
             }
         }
     }
@@ -372,5 +412,6 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
         void OnJump(InputAction.CallbackContext context);
         void OnLook(InputAction.CallbackContext context);
         void OnDash(InputAction.CallbackContext context);
+        void OnSlide(InputAction.CallbackContext context);
     }
 }

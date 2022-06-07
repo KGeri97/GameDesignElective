@@ -971,15 +971,21 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   moveSpeed: 7
-  airMultiplier: 0.5
-  orientation: {fileID: 578162887}
-  groundCheckTransform: {fileID: 1662781218}
   groundDrag: 5
-  groundMask:
-    serializedVersion: 2
-    m_Bits: 192
+  maxSpeedReductionRate: 5
+  orientation: {fileID: 578162887}
   jumpForce: 8
   extraGravity: 2
+  airMultiplier: 0.3
+  slideMinDrag: 0
+  slideMaxDrag: 10
+  slideDragChangeSpeed: 3
+  slideHeightMultiplier: 0.3
+  slideSpeedLowThreshold: 3
+  dashSpeed: 80
+  dashDuration: 0.15
+  dashCooldown: 3
+  directionalDash: 1
   leftWallCheck: {fileID: 1569287266}
   rightWallCheck: {fileID: 1229773173}
   wallRunSpeed: 6
@@ -988,6 +994,10 @@ MonoBehaviour:
   wallkMask:
     serializedVersion: 2
     m_Bits: 128
+  groundCheckTransform: {fileID: 1662781218}
+  groundMask:
+    serializedVersion: 2
+    m_Bits: 192
 --- !u!1 &1569287265
 GameObject:
   m_ObjectHideFlags: 0
