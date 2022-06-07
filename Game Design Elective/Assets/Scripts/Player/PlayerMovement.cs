@@ -248,7 +248,7 @@ public class PlayerMovement : MonoBehaviour
         if (wallRunning)
             tempSpeed = wallRunSpeed;
 
-        if (!dashing && currentVelocity.magnitude > tempSpeed)
+        if (!sliding && !dashing && currentVelocity.magnitude > tempSpeed)
         {
             currentVelocity -= currentVelocity * maxSpeedReductionRate * Time.deltaTime;
             rb.velocity = new Vector3(currentVelocity.x, rb.velocity.y, currentVelocity.z);
