@@ -118,7 +118,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (!grounded && !wallRunning)
         {
-            rb.AddForce(Vector3.down * extraGravity, ForceMode.Force);
+            rb.AddForce(Vector3.down * extraGravity * Time.deltaTime, ForceMode.Force);
         }
     }
     
