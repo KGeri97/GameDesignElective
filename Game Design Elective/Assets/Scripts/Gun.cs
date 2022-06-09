@@ -98,12 +98,9 @@ public class Gun : MonoBehaviour
                 aimLocation.position = hit.point;
             }
 
-            cam.LookAt(aimLocation, Vector3.up);
-            //orientation.LookAt(aimLocation, Vector3.up);
-            //orientation.rotation = Quaternion.Euler(0, orientation.rotation.y, 0);
+            cam.LookAt(aimLocation);
 
             curveOffset = GetCurveOffset();
-            //curveOffsetTransform.position = curveOffset;
             SetLinePositions(curveOffset);
         }
         else if (!curve.IsPressed() && !newLocation)
