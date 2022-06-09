@@ -8,6 +8,7 @@ public class PlayerCamera : MonoBehaviour
     [SerializeField] Transform targetPosition;
 
     PlayerInput playerInput;
+    InputAction curve;
     InputAction lookAction;
     Vector2 look;
 
@@ -32,9 +33,12 @@ public class PlayerCamera : MonoBehaviour
 
     private void Update()
     {
-        GatherInput();
         UpdateCameraPosition();
-        LookPlayer();
+        if (!curve.IsPressed())
+        {
+            GatherInput();
+            LookPlayer();
+        }
 
         SwitchController();
     }
@@ -46,27 +50,27 @@ public class PlayerCamera : MonoBehaviour
 
     void LookPlayer()
     {
+            if (isGamepad)
+            {
+                xRotation += look.y * ySensitivity * gamepadMultiplier * 10 * Time.deltaTime;
+                yRotation += look.x * xSensitivity * gamepadMultiplier * 10 * Time.deltaTime;
+            }
+            else
+            {
+                xRotation += look.y * ySensitivity * 10 * Time.deltaTime;
+                yRotation += look.x * xSensitivity * 10 * Time.deltaTime;
+            }
 
-        if (isGamepad)
-        {
-            xRotation += look.y * ySensitivity * gamepadMultiplier * 10 * Time.deltaTime;
-            yRotation += look.x * xSensitivity * gamepadMultiplier * 10 * Time.deltaTime;
-        }
-        else
-        {
-            xRotation += look.y * ySensitivity * 10 * Time.deltaTime;
-            yRotation += look.x * xSensitivity * 10 * Time.deltaTime;
-        }
+            xRotation = Mathf.Clamp(xRotation, -90, 90);
 
-        xRotation = Mathf.Clamp(xRotation, -90, 90);
-
-        transform.rotation = Quaternion.Euler(-xRotation, yRotation, 0);
-        orientation.rotation = Quaternion.Euler(0, yRotation, 0);
+            transform.rotation = Quaternion.Euler(-xRotation, yRotation, 0);
+            orientation.rotation = Quaternion.Euler(0, yRotation, 0);
     }
 
     void mapControls()
     {
         lookAction = playerInput.actions["Look"];
+        curve = playerInput.actions["Curve"];
     }
 
     void GatherInput()

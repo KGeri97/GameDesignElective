@@ -71,6 +71,24 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Shoot"",
+                    ""type"": ""Button"",
+                    ""id"": ""66d8a563-d72d-4261-8047-2b0f42ff0707"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Curve"",
+                    ""type"": ""Button"",
+                    ""id"": ""a75049f0-ffb2-4b27-8ebd-045b56c0891d"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -227,6 +245,50 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                     ""action"": ""Slide"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""cae44110-e9fb-4676-8543-73ae6e5552d6"",
+                    ""path"": ""<Mouse>/leftButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""PC"",
+                    ""action"": ""Shoot"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""658afc15-8543-4f92-a207-6858c1119c53"",
+                    ""path"": ""<Gamepad>/rightTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Shoot"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""f7a31d8b-5d20-421c-afe7-10fd0b18d135"",
+                    ""path"": ""<Mouse>/rightButton"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""PC"",
+                    ""action"": ""Curve"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""1544f22d-5c61-424b-bbdd-c23a95a1a665"",
+                    ""path"": ""<Gamepad>/leftTrigger"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""Curve"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -268,6 +330,8 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
         m_Game_Look = m_Game.FindAction("Look", throwIfNotFound: true);
         m_Game_Dash = m_Game.FindAction("Dash", throwIfNotFound: true);
         m_Game_Slide = m_Game.FindAction("Slide", throwIfNotFound: true);
+        m_Game_Shoot = m_Game.FindAction("Shoot", throwIfNotFound: true);
+        m_Game_Curve = m_Game.FindAction("Curve", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -332,6 +396,8 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
     private readonly InputAction m_Game_Look;
     private readonly InputAction m_Game_Dash;
     private readonly InputAction m_Game_Slide;
+    private readonly InputAction m_Game_Shoot;
+    private readonly InputAction m_Game_Curve;
     public struct GameActions
     {
         private @PlayerController m_Wrapper;
@@ -341,6 +407,8 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
         public InputAction @Look => m_Wrapper.m_Game_Look;
         public InputAction @Dash => m_Wrapper.m_Game_Dash;
         public InputAction @Slide => m_Wrapper.m_Game_Slide;
+        public InputAction @Shoot => m_Wrapper.m_Game_Shoot;
+        public InputAction @Curve => m_Wrapper.m_Game_Curve;
         public InputActionMap Get() { return m_Wrapper.m_Game; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -365,6 +433,12 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                 @Slide.started -= m_Wrapper.m_GameActionsCallbackInterface.OnSlide;
                 @Slide.performed -= m_Wrapper.m_GameActionsCallbackInterface.OnSlide;
                 @Slide.canceled -= m_Wrapper.m_GameActionsCallbackInterface.OnSlide;
+                @Shoot.started -= m_Wrapper.m_GameActionsCallbackInterface.OnShoot;
+                @Shoot.performed -= m_Wrapper.m_GameActionsCallbackInterface.OnShoot;
+                @Shoot.canceled -= m_Wrapper.m_GameActionsCallbackInterface.OnShoot;
+                @Curve.started -= m_Wrapper.m_GameActionsCallbackInterface.OnCurve;
+                @Curve.performed -= m_Wrapper.m_GameActionsCallbackInterface.OnCurve;
+                @Curve.canceled -= m_Wrapper.m_GameActionsCallbackInterface.OnCurve;
             }
             m_Wrapper.m_GameActionsCallbackInterface = instance;
             if (instance != null)
@@ -384,6 +458,12 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                 @Slide.started += instance.OnSlide;
                 @Slide.performed += instance.OnSlide;
                 @Slide.canceled += instance.OnSlide;
+                @Shoot.started += instance.OnShoot;
+                @Shoot.performed += instance.OnShoot;
+                @Shoot.canceled += instance.OnShoot;
+                @Curve.started += instance.OnCurve;
+                @Curve.performed += instance.OnCurve;
+                @Curve.canceled += instance.OnCurve;
             }
         }
     }
@@ -413,5 +493,7 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
         void OnLook(InputAction.CallbackContext context);
         void OnDash(InputAction.CallbackContext context);
         void OnSlide(InputAction.CallbackContext context);
+        void OnShoot(InputAction.CallbackContext context);
+        void OnCurve(InputAction.CallbackContext context);
     }
 }
