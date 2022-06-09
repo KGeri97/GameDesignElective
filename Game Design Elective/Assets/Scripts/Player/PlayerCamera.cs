@@ -35,7 +35,6 @@ public class PlayerCamera : MonoBehaviour
     {
         UpdateCameraPosition();
 
-        GatherInput();
         LookPlayer();
 
         SwitchController();
@@ -50,6 +49,7 @@ public class PlayerCamera : MonoBehaviour
     {
         if (!curve.IsPressed())
         {
+            GatherInput();
             if (isGamepad)
             {
                 xRotation += look.y * ySensitivity * gamepadMultiplier * 10 * Time.deltaTime;
@@ -67,8 +67,13 @@ public class PlayerCamera : MonoBehaviour
             orientation.rotation = Quaternion.Euler(0, yRotation, 0);
         } else if (curve.IsPressed())
         {
-            xRotation = -transform.eulerAngles.x;
+            if (transform.eulerAngles.x <= 90)
+                xRotation = -transform.eulerAngles.x;
+            else
+                xRotation = 90 - (transform.eulerAngles.x - 270);
+
             yRotation = transform.eulerAngles.y;
+
             orientation.rotation = Quaternion.Euler(0, yRotation, 0);
         }
             

@@ -21,6 +21,7 @@ public class Gun : MonoBehaviour
     [SerializeField] float maxCurveModifier;
     [SerializeField] float fireRate;
     bool canShoot = true;
+    bool validTarget;
     float maxCurve;
 
     //[SerializeField] Transform curveOffsetTransform;
@@ -70,12 +71,7 @@ public class Gun : MonoBehaviour
             }
             else
             {
-                Physics.Raycast(cam.position, cam.forward, out hit, 100, bulletMask);
-                Vector3 halfPoint = firePoint.position + (hit.point - firePoint.position) / 2;
-
-                bScript.origin = firePoint.position;
-                bScript.curveModifier = halfPoint;
-                bScript.endPoint = hit.point;
+                bScript.direction = cam.forward;
             }
         }
     }
@@ -94,9 +90,18 @@ public class Gun : MonoBehaviour
             if (newLocation)
             {
                 newLocation = false;
-                Physics.Raycast(cam.position, cam.forward, out hit, 100, bulletMask);
-                aimLocation.position = hit.point;
+                if (Physics.Raycast(cam.position, cam.forward, out hit, 100, bulletMask))
+                {
+                    validTarget = true;
+                    aimLocation.position = hit.point;
+                }
+                else
+                    validTarget = false;
+
             }
+
+            if (!validTarget)
+                return;
 
             cam.LookAt(aimLocation);
 

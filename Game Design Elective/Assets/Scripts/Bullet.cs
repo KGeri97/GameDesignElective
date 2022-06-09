@@ -9,6 +9,8 @@ public class Bullet : MonoBehaviour
     [SerializeField] public Vector3 curveModifier;
     [SerializeField] public Vector3 endPoint;
     [SerializeField] LayerMask bulletMask;
+    [SerializeField] float maxLifeTime;
+    public Vector3 direction;
     float interpolateAmount = 0;
     float counter;
 
@@ -18,12 +20,22 @@ public class Bullet : MonoBehaviour
         interpolateAmount = (interpolateAmount + Time.deltaTime) % 1f;
         counter += Time.deltaTime;
 
-        if (counter > 1)
+        if (direction != default)
         {
-            Destroy(gameObject);
+            if (counter > maxLifeTime)
+            {
+                Destroy(gameObject);
+            }
+            transform.position += direction * speed * Time.deltaTime;
         }
-
-        transform.position = QuadraticLerp(origin, curveModifier, endPoint, interpolateAmount);
+        else
+        {
+            if (counter > 1)
+            {
+                Destroy(gameObject);
+            }
+            transform.position = QuadraticLerp(origin, curveModifier, endPoint, interpolateAmount);
+        }
     }
 
     Vector3 QuadraticLerp(Vector3 a, Vector3 b, Vector3 c, float t)
@@ -33,9 +45,9 @@ public class Bullet : MonoBehaviour
 
         return Vector3.Lerp(ab, bc, t);
     }
-    private void OnCollisionEnter(Collision collision)
+    private void OnTriggerEnter(Collider other)
     {
-        if ((bulletMask.value & (1 << collision.gameObject.layer)) > 0)
+        if ((bulletMask.value & (1 << other.gameObject.layer)) > 0)
         {
             Destroy(gameObject);
         }
