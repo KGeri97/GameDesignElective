@@ -5,6 +5,7 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     [SerializeField] float speed;
+    [SerializeField] public float damage;
     [SerializeField] public Vector3 origin;
     [SerializeField] public Vector3 curveModifier;
     [SerializeField] public Vector3 endPoint;
