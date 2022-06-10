@@ -10,7 +10,7 @@ public class EnemyBody : MonoBehaviour
     {
         if (other.gameObject.tag == "Bullet")
         {
-            Debug.Log("Bodyshot");
+            //Debug.Log("Bodyshot");
             float dmg = other.gameObject.GetComponent<Bullet>().damage;
             healthScript.health -= dmg * healthScript.bodyDmgModifier;
         }

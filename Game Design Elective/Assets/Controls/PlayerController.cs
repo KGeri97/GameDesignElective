@@ -89,6 +89,15 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""SlowMo"",
+                    ""type"": ""Button"",
+                    ""id"": ""99f5b2e3-01b8-45a1-aba6-e1f2f154bcc2"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -216,7 +225,7 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                 {
                     ""name"": """",
                     ""id"": ""2af5d5e4-0e5e-4090-9a6d-b52f4acbe978"",
-                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""path"": ""<Gamepad>/leftStickPress"",
                     ""interactions"": """",
                     ""processors"": """",
                     ""groups"": ""Gamepad"",
@@ -289,6 +298,17 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                     ""action"": ""Curve"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""a8845641-6c1a-4d43-b1a6-69f9521d5b39"",
+                    ""path"": ""<Gamepad>/rightShoulder"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""Gamepad"",
+                    ""action"": ""SlowMo"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -332,6 +352,7 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
         m_Game_Slide = m_Game.FindAction("Slide", throwIfNotFound: true);
         m_Game_Shoot = m_Game.FindAction("Shoot", throwIfNotFound: true);
         m_Game_Curve = m_Game.FindAction("Curve", throwIfNotFound: true);
+        m_Game_SlowMo = m_Game.FindAction("SlowMo", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -398,6 +419,7 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
     private readonly InputAction m_Game_Slide;
     private readonly InputAction m_Game_Shoot;
     private readonly InputAction m_Game_Curve;
+    private readonly InputAction m_Game_SlowMo;
     public struct GameActions
     {
         private @PlayerController m_Wrapper;
@@ -409,6 +431,7 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
         public InputAction @Slide => m_Wrapper.m_Game_Slide;
         public InputAction @Shoot => m_Wrapper.m_Game_Shoot;
         public InputAction @Curve => m_Wrapper.m_Game_Curve;
+        public InputAction @SlowMo => m_Wrapper.m_Game_SlowMo;
         public InputActionMap Get() { return m_Wrapper.m_Game; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -439,6 +462,9 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                 @Curve.started -= m_Wrapper.m_GameActionsCallbackInterface.OnCurve;
                 @Curve.performed -= m_Wrapper.m_GameActionsCallbackInterface.OnCurve;
                 @Curve.canceled -= m_Wrapper.m_GameActionsCallbackInterface.OnCurve;
+                @SlowMo.started -= m_Wrapper.m_GameActionsCallbackInterface.OnSlowMo;
+                @SlowMo.performed -= m_Wrapper.m_GameActionsCallbackInterface.OnSlowMo;
+                @SlowMo.canceled -= m_Wrapper.m_GameActionsCallbackInterface.OnSlowMo;
             }
             m_Wrapper.m_GameActionsCallbackInterface = instance;
             if (instance != null)
@@ -464,6 +490,9 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                 @Curve.started += instance.OnCurve;
                 @Curve.performed += instance.OnCurve;
                 @Curve.canceled += instance.OnCurve;
+                @SlowMo.started += instance.OnSlowMo;
+                @SlowMo.performed += instance.OnSlowMo;
+                @SlowMo.canceled += instance.OnSlowMo;
             }
         }
     }
@@ -495,5 +524,6 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
         void OnSlide(InputAction.CallbackContext context);
         void OnShoot(InputAction.CallbackContext context);
         void OnCurve(InputAction.CallbackContext context);
+        void OnSlowMo(InputAction.CallbackContext context);
     }
 }
