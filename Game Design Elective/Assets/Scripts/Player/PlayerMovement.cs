@@ -78,8 +78,6 @@ public class PlayerMovement : MonoBehaviour
         IsGrounded();
         ControlDrag();
 
-        Jump();
-        ResetJump();
         Slide();
         Dash();
         WallRun();
@@ -88,6 +86,8 @@ public class PlayerMovement : MonoBehaviour
     void FixedUpdate()
     {
         MovePlayer();
+        Jump();
+        ResetJump();
         ControlSpeed();
     }
 
@@ -110,10 +110,10 @@ public class PlayerMovement : MonoBehaviour
     {
         if (jump.IsPressed() && canJump && grounded)
         {
-            rb.velocity = new Vector3(rb.velocity.x, 0, rb.velocity.z);
+            float up = (jumpForce / rb.mass);// * Time.fixedDeltaTime;
+            rb.velocity = new Vector3(rb.velocity.x, up, rb.velocity.z);
             canJump = false;
-
-            rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
+            //rb.AddForce(Vector3.up * jumpForce, ForceMode.Impulse);
         }
 
         if (!grounded && !wallRunning)
