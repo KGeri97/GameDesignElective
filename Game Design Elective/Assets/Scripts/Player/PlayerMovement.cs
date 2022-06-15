@@ -29,6 +29,7 @@ public class PlayerMovement : MonoBehaviour
     bool canJump;
 
     [Header("Slide")]
+    [SerializeField] Transform cameraPosition;
     [SerializeField] float slideMinDrag;
     [SerializeField] float slideMaxDrag;
     [SerializeField] float slideDragChangeSpeed;
@@ -36,6 +37,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float slideSpeedLowThreshold;
     bool sliding = false;
     CapsuleCollider coll;
+    float collSizeDiff;
 
     [Header("Dash")]
     [SerializeField] float dashSpeed;
@@ -51,7 +53,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float wallRunSpeed;
     [SerializeField][Range(0, 90)] float offWallJumpAngle;
     [SerializeField] float offWallJumpForce;
-    [SerializeField] LayerMask wallkMask;
+    [SerializeField] LayerMask wallMask;
     bool leftWall;
     bool rightWall;
     bool wallRunning;
@@ -67,6 +69,8 @@ public class PlayerMovement : MonoBehaviour
         playerInput = GetComponent<PlayerInput>();
         rb = GetComponent<Rigidbody>();
         coll = GetComponent<CapsuleCollider>();
+        collSizeDiff = (coll.height - coll.height * slideHeightMultiplier) / 2;
+        Debug.Log(collSizeDiff);
 
         MapControls();
     }
@@ -118,7 +122,7 @@ public class PlayerMovement : MonoBehaviour
 
         if (!grounded && !wallRunning)
         {
-            rb.AddForce(Vector3.down * extraGravity * Time.deltaTime, ForceMode.Force);
+            rb.AddForce(Vector3.down * extraGravity * 100 * Time.deltaTime, ForceMode.Force);
         }
     }
     
@@ -128,12 +132,16 @@ public class PlayerMovement : MonoBehaviour
         {
             rb.drag = slideMinDrag;
             sliding = true;
+            transform.position = new Vector3(transform.position.x, collSizeDiff, transform.position.z);
             coll.height *= slideHeightMultiplier;
+            cameraPosition.localPosition = new Vector3(cameraPosition.localPosition.x, cameraPosition.localPosition.y * slideHeightMultiplier, cameraPosition.localPosition.z);
         }
         else if (sliding && (rb.velocity.magnitude < slideSpeedLowThreshold || jump.IsPressed()))
         {
             sliding = false;
+            transform.position = new Vector3(transform.position.x, 1, transform.position.z);
             coll.height /= slideHeightMultiplier;
+            cameraPosition.localPosition = new Vector3(cameraPosition.localPosition.x, cameraPosition.localPosition.y / slideHeightMultiplier, cameraPosition.localPosition.z);
         }
     }
 
@@ -167,8 +175,8 @@ public class PlayerMovement : MonoBehaviour
 
     void WallRun()
     {
-        leftWall = Physics.OverlapSphere(leftWallCheck.position, 0.1f, wallkMask).Length > 0;
-        rightWall = Physics.OverlapSphere(rightWallCheck.position, 0.1f, wallkMask).Length > 0;
+        leftWall = Physics.OverlapSphere(leftWallCheck.position, 0.25f, wallMask).Length > 0;
+        rightWall = Physics.OverlapSphere(rightWallCheck.position, 0.25f, wallMask).Length > 0;
 
         if (!grounded && (leftWall || rightWall) && !dashing && jump.IsPressed() && canJump)
         {
@@ -176,11 +184,11 @@ public class PlayerMovement : MonoBehaviour
 
             if (leftWall)
             {
-                Physics.Raycast(leftWallCheck.position, -orientation.right, out hit, 0.1f, wallkMask);
+                Physics.Raycast(leftWallCheck.position, -orientation.right, out hit, 0.1f, wallMask);
             }
             else if (rightWall)
             {
-                Physics.Raycast(rightWallCheck.position, orientation.right, out hit, 0.1f, wallkMask);
+                Physics.Raycast(rightWallCheck.position, orientation.right, out hit, 0.1f, wallMask);
             }
 
             StartWallRun(hit);
@@ -212,6 +220,7 @@ public class PlayerMovement : MonoBehaviour
             canJump = false;
             Vector3 jumpAngle = hit.normal * (90 - offWallJumpAngle) + Vector3.up * offWallJumpAngle;
             rb.AddForce(jumpAngle.normalized * offWallJumpForce, ForceMode.Impulse);
+            StopWallRun();
         }
     }
 
