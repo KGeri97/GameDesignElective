@@ -15,6 +15,7 @@ public class SlowMotion : MonoBehaviour
     [SerializeField] float slowMoFadeTime;
     [SerializeField] public float specialCap;
     [SerializeField] public float specialDrainRate;
+    [SerializeField] public float specialDrainRateSlowMo;
     [SerializeField] public float headshotGain;
     public float specialAmount;
 
@@ -39,7 +40,7 @@ public class SlowMotion : MonoBehaviour
     {
         if (slowMo.IsPressed())
         {
-            specialAmount -= specialDrainRate * Time.deltaTime;
+            specialAmount -= specialDrainRateSlowMo * Time.deltaTime;
         }
 
         if (slowMo.IsPressed() && Time.timeScale > minTimeScale && specialAmount > specialDrainRate * Time.deltaTime)

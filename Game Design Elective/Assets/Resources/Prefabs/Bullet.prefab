@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f2ad335ce6753f4880d72e2264f06ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  speed: 70
+  speed: 100
   curveSpeed: 0
   damage: 100
   origin: {x: 0, y: 0, z: 0}
@@ -60,6 +60,7 @@ MonoBehaviour:
     serializedVersion: 2
     m_Bits: 0
   maxLifeTime: 5
+  marker: {fileID: 0}
   direction: {x: 0, y: 0, z: 0}
 --- !u!33 &3636153912346849234
 MeshFilter:

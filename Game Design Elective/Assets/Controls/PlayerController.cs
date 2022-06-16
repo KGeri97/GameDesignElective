@@ -309,6 +309,17 @@ public partial class @PlayerController : IInputActionCollection2, IDisposable
                     ""action"": ""SlowMo"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""4514d67c-e7a4-467c-8b6d-e90ef8a921b2"",
+                    ""path"": ""<Keyboard>/leftAlt"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": ""PC"",
+                    ""action"": ""SlowMo"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }

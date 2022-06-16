@@ -76,6 +76,7 @@ public class Gun : MonoBehaviour
                 bScript.origin = firePoint.position;
                 bScript.curveModifier = curveOffset;
                 bScript.endPoint = aimLocation.position;
+                bScript.marker = aimLocation;
             }
             else
             {

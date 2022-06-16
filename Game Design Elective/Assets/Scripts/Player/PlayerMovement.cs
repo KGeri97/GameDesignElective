@@ -8,7 +8,7 @@ public class PlayerMovement : MonoBehaviour
     Rigidbody rb;
 
     //Input
-    PlayerInput playerInput;
+    public PlayerInput playerInput;
     InputAction moveAction;
     Vector2 move;
     InputAction jump;
@@ -23,7 +23,7 @@ public class PlayerMovement : MonoBehaviour
     Vector3 moveDirection;
 
     [Header("Jump")]
-    [SerializeField] float jumpForce;
+    [SerializeField] public float jumpForce;
     [SerializeField] float extraGravity;
     [SerializeField] float airMultiplier;
     bool canJump;

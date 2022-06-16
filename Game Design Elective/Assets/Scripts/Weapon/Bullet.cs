@@ -5,7 +5,7 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     [SerializeField] float speed;
-    [SerializeField] float curveSpeed;
+    float curveSpeed;
     [SerializeField] public float damage;
     [SerializeField] public Vector3 origin;
     [SerializeField] public Vector3 curveModifier;
@@ -13,6 +13,7 @@ public class Bullet : MonoBehaviour
     [SerializeField] LayerMask bulletMask;
     [SerializeField] LayerMask enemyMask;
     [SerializeField] float maxLifeTime;
+    public Transform marker;
     public Vector3 direction;
     float interpolateAmount = 0;
     float counter;
@@ -21,7 +22,7 @@ public class Bullet : MonoBehaviour
     private void Start()
     {
         distance = Vector3.Distance(origin, endPoint);
-        curveSpeed = 1 / distance * 40;
+        curveSpeed = 1 / distance * 50;
     }
 
     void Update()
@@ -43,6 +44,7 @@ public class Bullet : MonoBehaviour
         }
         else
         {
+            endPoint = marker.position;
             if (interpolateAmount >= 1)
                 Invoke("asd", 0.1f);
             else 
