@@ -282,18 +282,19 @@ public class CPBeginning : MonoBehaviour
         {
             greenBarrier.SetActive(true);
             advancedEnemyBarrier.triggered = false;
-            txt51.SetActive(false);
             tutAdvancedEnemyReached = false;
-            counter = 0;
+            txt51.SetActive(false);
             txt52.SetActive(true);
+            counter = 0;
         }
     }
 
     void tut52()
     {
-        if (!enemy4.activeSelf)
+        if (!enemy4.activeSelf && (txt52.activeSelf || txt51.activeSelf))
         {
             txt52.SetActive(false);
+            txt51.SetActive(false);
             pMove.jumpForce = jumpForce;
             greenBarrier.SetActive(false);
             pGun.canShoot = true;
