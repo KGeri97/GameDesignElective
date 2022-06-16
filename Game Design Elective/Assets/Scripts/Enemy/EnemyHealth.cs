@@ -7,13 +7,14 @@ public class EnemyHealth : MonoBehaviour
     [SerializeField] public float health;
     [SerializeField] public float headDmgModifier;
     [SerializeField] public float bodyDmgModifier;
+    [SerializeField] float respawnTimer;
 
     private void Update()
     {
         if (health <= 0)
         {
             gameObject.SetActive(false);
-            Invoke("Respawn", 1);
+            Invoke("Respawn", respawnTimer);
         }
     }
 

@@ -9,7 +9,7 @@ public class EnemyHead : MonoBehaviour
 
     private void Awake()
     {
-        sloMoScript = GameObject.Find("Player").GetComponent<SlowMotion>();
+        sloMoScript = GameObject.Find("Player").GetComponentInChildren<SlowMotion>();
     }
 
     private void OnTriggerEnter(Collider other)

@@ -22,7 +22,7 @@ public class Gun : MonoBehaviour
     [SerializeField] float maxCurveModifier;
     [SerializeField] float fireRate;
     [SerializeField] float range;
-    bool canShoot = true;
+    public bool canShoot = true;
     bool validTarget;
     float maxCurve;
     float xOffset;

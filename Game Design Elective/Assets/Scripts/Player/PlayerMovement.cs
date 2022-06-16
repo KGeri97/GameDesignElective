@@ -54,9 +54,10 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField][Range(0, 90)] float offWallJumpAngle;
     [SerializeField] float offWallJumpForce;
     [SerializeField] LayerMask wallMask;
+    float stupid;
     bool leftWall;
     bool rightWall;
-    bool wallRunning;
+    public bool wallRunning;
     bool firstTimeReset = true;
 
     [Header("Ground")]
@@ -177,8 +178,8 @@ public class PlayerMovement : MonoBehaviour
 
     void WallRun()
     {
-        leftWall = Physics.OverlapSphere(leftWallCheck.position, 0.5f, wallMask).Length > 0;
-        rightWall = Physics.OverlapSphere(rightWallCheck.position, 0.5f, wallMask).Length > 0;
+        leftWall = Physics.OverlapSphere(leftWallCheck.position, 0.5f + stupid, wallMask).Length > 0;
+        rightWall = Physics.OverlapSphere(rightWallCheck.position, 0.5f + stupid, wallMask).Length > 0;
 
         if (!grounded && (leftWall || rightWall) && !dashing && jump.IsPressed() && canJump)
         {
@@ -203,6 +204,7 @@ public class PlayerMovement : MonoBehaviour
 
     void StartWallRun(RaycastHit hit)
     {
+        stupid = 0.1f;
         if (firstTimeReset)
         {
             firstTimeReset = false;
@@ -212,8 +214,8 @@ public class PlayerMovement : MonoBehaviour
         if (!wallRunning)
             wallRunning = true;
 
-        Vector3 wallRunDirection = Vector3.ProjectOnPlane(orientation.forward, hit.normal);
-        //Vector3 wallRunDirection2 = orientation.forward - hit.normal * Vector3.Dot(orientation.forward, hit.normal);
+        //Vector3 wallRunDirection = Vector3.ProjectOnPlane(orientation.forward, hit.normal);
+        Vector3 wallRunDirection = orientation.forward - hit.normal * Vector3.Dot(orientation.forward, hit.normal);
         //Debug.DrawLine(transform.position, transform.position + wallRunDirection * 20, Color.red, 20);
 
         rb.useGravity = false;
@@ -230,6 +232,7 @@ public class PlayerMovement : MonoBehaviour
 
     void StopWallRun()
     {
+        stupid = 0;
         firstTimeReset = true;
 
         if (wallRunning)
