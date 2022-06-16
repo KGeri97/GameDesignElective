@@ -20,7 +20,7 @@ public class PlayerMovement : MonoBehaviour
     [SerializeField] float groundDrag;
     [SerializeField] float maxSpeedReductionRate;
     [SerializeField] Transform orientation;
-    Vector3 moveDirection;
+    public Vector3 moveDirection;
 
     [Header("Jump")]
     [SerializeField] public float jumpForce;
@@ -195,7 +195,7 @@ public class PlayerMovement : MonoBehaviour
 
             StartWallRun(hit);
         }
-        else if (!leftWall && !rightWall)
+        else if (!leftWall && !rightWall || rb.velocity == Vector3.zero || slide.IsPressed())
         {
             StopWallRun();
         }

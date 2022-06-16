@@ -11,7 +11,7 @@ public class PlayerCamera : MonoBehaviour
     PlayerInput playerInput;
     InputAction curve;
     InputAction lookAction;
-    Vector2 look;
+    public Vector2 look;
 
     [Header("Look")]
     [SerializeField] Transform orientation;
