@@ -5,6 +5,7 @@ using UnityEngine;
 public class Bullet : MonoBehaviour
 {
     [SerializeField] float speed;
+    [SerializeField] float curveSpeed;
     [SerializeField] public float damage;
     [SerializeField] public Vector3 origin;
     [SerializeField] public Vector3 curveModifier;
@@ -18,13 +19,14 @@ public class Bullet : MonoBehaviour
 
     private void Start()
     {
-        distance = Vector3.Distance(direction, transform.position);
+        distance = Vector3.Distance(origin, endPoint);
+        curveSpeed = 1 / distance * 50;
     }
 
-    void FixedUpdate()
+    void Update()
     {
         //https://www.youtube.com/watch?v=7j_BNf9s0jM&ab_channel=CodeMonkey
-        interpolateAmount += Time.deltaTime * speed;
+        interpolateAmount += Time.deltaTime * curveSpeed;
         //interpolateAmount = (interpolateAmount + Time.deltaTime) % 1f;
         counter += Time.deltaTime;
 
@@ -38,7 +40,7 @@ public class Bullet : MonoBehaviour
         }
         else
         {
-            if (counter > 1)
+            if (interpolateAmount > 1)
             {
                 Destroy(gameObject);
             }

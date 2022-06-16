@@ -10,11 +10,11 @@ public class Gun : MonoBehaviour
     InputAction shoot;
     InputAction curve;
     InputAction lookAction;
-    InputAction slowMo;
     Vector2 look;
     bool isGamepad;
 
     [Header("Gun")]
+    [SerializeField] SlowMotion sloMoscript;
     [SerializeField] GameObject bulletPrefab;
     [SerializeField] Transform firePoint;
     [SerializeField] Transform aimLocation;
@@ -31,10 +31,6 @@ public class Gun : MonoBehaviour
     [Header("Enemy")]
     [SerializeField] LayerMask enemyMask;
     [SerializeField] float behindWallDistance;
-
-    [Header("Slow-Mo")]
-    [SerializeField][Range(0, 1)] float minTimeScale;
-    [SerializeField] float slowMoFadeTime;
 
     //[SerializeField] Transform curveOffsetTransform;
 
@@ -61,7 +57,6 @@ public class Gun : MonoBehaviour
         SwitchController();
 
         GatherInput();
-        SlowMo();
         Curve();
         Shoot();
     }
@@ -96,10 +91,11 @@ public class Gun : MonoBehaviour
 
     void Curve()
     {
-        if (curve.IsPressed())
+        if (curve.IsPressed() && sloMoscript.specialAmount > sloMoscript.specialDrainRate * Time.deltaTime)
         {
             lr.positionCount = lineResolution;
             aimLocation.gameObject.SetActive(true);
+            sloMoscript.specialAmount -= sloMoscript.specialDrainRate * Time.deltaTime;
 
             if (newLocation)
             {
@@ -137,7 +133,7 @@ public class Gun : MonoBehaviour
         else if (!curve.IsPressed() && !newLocation)
             newLocation = true;
 
-        if (!curve.IsPressed())
+        if (!curve.IsPressed() || sloMoscript.specialAmount < sloMoscript.specialDrainRate * Time.deltaTime)
         {
             lr.positionCount = 0;
             aimLocation.gameObject.SetActive(false);
@@ -175,23 +171,6 @@ public class Gun : MonoBehaviour
         return halfPoint;
     }
 
-    void SlowMo()
-    {
-        if (slowMo.IsPressed() && Time.timeScale > minTimeScale)
-        {
-            Time.timeScale -= slowMoFadeTime * Time.deltaTime;
-            if (Time.timeScale < minTimeScale)
-                Time.timeScale = minTimeScale;
-        }
-
-        if (!slowMo.IsPressed() && Time.timeScale < 1)
-        {
-            Time.timeScale += slowMoFadeTime * 4 * Time.deltaTime;
-            if (Time.timeScale > 1)
-                Time.timeScale = 1;
-        }
-    }
-
     void SetLinePositions(Vector3 offSet)
     {
         for (int i = 0; i < lineResolution; i++)
@@ -205,7 +184,6 @@ public class Gun : MonoBehaviour
         lookAction = playerInput.actions["Look"];
         shoot = playerInput.actions["Shoot"];
         curve = playerInput.actions["Curve"];
-        slowMo = playerInput.actions["SlowMo"];
     }
 
     void GatherInput()

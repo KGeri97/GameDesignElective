@@ -48,6 +48,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   speed: 100
+  curveSpeed: 5
   damage: 100
   origin: {x: 0, y: 0, z: 0}
   curveModifier: {x: 0, y: 0, z: 0}

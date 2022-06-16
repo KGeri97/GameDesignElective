@@ -6,6 +6,7 @@ using UnityEngine.InputSystem;
 public class PlayerCamera : MonoBehaviour
 {
     [SerializeField] Transform targetPosition;
+    [SerializeField] SlowMotion sloMoscript;
 
     PlayerInput playerInput;
     InputAction curve;
@@ -47,7 +48,7 @@ public class PlayerCamera : MonoBehaviour
 
     void LookPlayer()
     {
-        if (!curve.IsPressed())
+        if (!curve.IsPressed() || sloMoscript.specialAmount < sloMoscript.specialDrainRate * Time.deltaTime)
         {
             GatherInput();
             if (isGamepad)

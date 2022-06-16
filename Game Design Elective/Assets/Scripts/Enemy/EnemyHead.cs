@@ -5,6 +5,12 @@ using UnityEngine;
 public class EnemyHead : MonoBehaviour
 {
     [SerializeField] EnemyHealth healthScript;
+    [SerializeField] SlowMotion sloMoScript;
+
+    private void Awake()
+    {
+        sloMoScript = GameObject.Find("Player").GetComponent<SlowMotion>();
+    }
 
     private void OnTriggerEnter(Collider other)
     {
@@ -13,6 +19,8 @@ public class EnemyHead : MonoBehaviour
             //Debug.Log("Headshot");
             float dmg = other.gameObject.GetComponent<Bullet>().damage;
             healthScript.health -= dmg * healthScript.headDmgModifier;
+
+            sloMoScript.specialAmount += sloMoScript.headshotGain;
         }
     }
 }
