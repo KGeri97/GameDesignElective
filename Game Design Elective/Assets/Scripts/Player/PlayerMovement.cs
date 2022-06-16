@@ -84,6 +84,9 @@ public class PlayerMovement : MonoBehaviour
         Slide();
         Dash();
         WallRun();
+
+
+        //Debug.DrawLine(transform.position, transform.position + orientation.forward * 10, Color.green);
     }
 
     void FixedUpdate()
@@ -131,14 +134,14 @@ public class PlayerMovement : MonoBehaviour
         {
             rb.drag = slideMinDrag;
             sliding = true;
-            transform.position = new Vector3(transform.position.x, collSizeDiff, transform.position.z);
+            transform.position = new Vector3(transform.position.x, transform.position.y - collSizeDiff, transform.position.z);
             coll.height *= slideHeightMultiplier;
             cameraPosition.localPosition = new Vector3(cameraPosition.localPosition.x, cameraPosition.localPosition.y * slideHeightMultiplier, cameraPosition.localPosition.z);
         }
         else if (sliding && (rb.velocity.magnitude < slideSpeedLowThreshold || jump.IsPressed()))
         {
             sliding = false;
-            transform.position = new Vector3(transform.position.x, 1, transform.position.z);
+            transform.position = new Vector3(transform.position.x, transform.position.y + collSizeDiff, transform.position.z);
             coll.height /= slideHeightMultiplier;
             cameraPosition.localPosition = new Vector3(cameraPosition.localPosition.x, cameraPosition.localPosition.y / slideHeightMultiplier, cameraPosition.localPosition.z);
         }
@@ -174,8 +177,8 @@ public class PlayerMovement : MonoBehaviour
 
     void WallRun()
     {
-        leftWall = Physics.OverlapSphere(leftWallCheck.position, 0.25f, wallMask).Length > 0;
-        rightWall = Physics.OverlapSphere(rightWallCheck.position, 0.25f, wallMask).Length > 0;
+        leftWall = Physics.OverlapSphere(leftWallCheck.position, 0.5f, wallMask).Length > 0;
+        rightWall = Physics.OverlapSphere(rightWallCheck.position, 0.5f, wallMask).Length > 0;
 
         if (!grounded && (leftWall || rightWall) && !dashing && jump.IsPressed() && canJump)
         {
@@ -183,11 +186,11 @@ public class PlayerMovement : MonoBehaviour
 
             if (leftWall)
             {
-                Physics.Raycast(leftWallCheck.position, -orientation.right, out hit, 0.1f, wallMask);
+                Physics.Raycast(leftWallCheck.position, -orientation.right, out hit, 0.7f, wallMask);
             }
             else if (rightWall)
             {
-                Physics.Raycast(rightWallCheck.position, orientation.right, out hit, 0.1f, wallMask);
+                Physics.Raycast(rightWallCheck.position, orientation.right, out hit, 0.7f, wallMask);
             }
 
             StartWallRun(hit);
@@ -210,6 +213,8 @@ public class PlayerMovement : MonoBehaviour
             wallRunning = true;
 
         Vector3 wallRunDirection = Vector3.ProjectOnPlane(orientation.forward, hit.normal);
+        //Vector3 wallRunDirection2 = orientation.forward - hit.normal * Vector3.Dot(orientation.forward, hit.normal);
+        //Debug.DrawLine(transform.position, transform.position + wallRunDirection * 20, Color.red, 20);
 
         rb.useGravity = false;
         rb.velocity = wallRunDirection.normalized * wallRunSpeed;
