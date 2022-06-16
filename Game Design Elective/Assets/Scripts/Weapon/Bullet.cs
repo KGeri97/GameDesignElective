@@ -11,6 +11,7 @@ public class Bullet : MonoBehaviour
     [SerializeField] public Vector3 curveModifier;
     [SerializeField] public Vector3 endPoint;
     [SerializeField] LayerMask bulletMask;
+    [SerializeField] LayerMask enemyMask;
     [SerializeField] float maxLifeTime;
     public Vector3 direction;
     float interpolateAmount = 0;
@@ -20,14 +21,16 @@ public class Bullet : MonoBehaviour
     private void Start()
     {
         distance = Vector3.Distance(origin, endPoint);
-        curveSpeed = 1 / distance * 50;
+        curveSpeed = 1 / distance * 40;
     }
 
     void Update()
     {
         //https://www.youtube.com/watch?v=7j_BNf9s0jM&ab_channel=CodeMonkey
         interpolateAmount += Time.deltaTime * curveSpeed;
-        //interpolateAmount = (interpolateAmount + Time.deltaTime) % 1f;
+        if (interpolateAmount > 1)
+            interpolateAmount = 1;
+
         counter += Time.deltaTime;
 
         if (direction != default)
@@ -40,12 +43,16 @@ public class Bullet : MonoBehaviour
         }
         else
         {
-            if (interpolateAmount > 1)
-            {
-                Destroy(gameObject);
-            }
-            transform.position = QuadraticLerp(origin, curveModifier, endPoint, interpolateAmount);
+            if (interpolateAmount >= 1)
+                Invoke("asd", 0.1f);
+            else 
+                transform.position = QuadraticLerp(origin, curveModifier, endPoint, interpolateAmount);
         }
+    }
+
+    void asd()
+    {
+        Destroy(gameObject);
     }
 
     Vector3 QuadraticLerp(Vector3 a, Vector3 b, Vector3 c, float t)
