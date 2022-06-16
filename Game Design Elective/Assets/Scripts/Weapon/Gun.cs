@@ -25,6 +25,8 @@ public class Gun : MonoBehaviour
     bool canShoot = true;
     bool validTarget;
     float maxCurve;
+    float xOffset;
+    float yOffset;
 
     [Header("Enemy")]
     [SerializeField] LayerMask enemyMask;
@@ -97,19 +99,25 @@ public class Gun : MonoBehaviour
         if (curve.IsPressed())
         {
             lr.positionCount = lineResolution;
+            aimLocation.gameObject.SetActive(true);
 
             if (newLocation)
             {
+
                 newLocation = false;
                 if (Physics.Raycast(cam.position, cam.forward, out hit, range, bulletMask))
                 {
+
                     validTarget = true;
                     aimLocation.position = hit.point;
+                    aimLocation.parent = hit.transform;
+
                     if (hit.collider.gameObject.layer != enemyMask)
                     {
                         if (Physics.Raycast(cam.position, cam.forward, out hit, range + behindWallDistance, enemyMask))
                         {
                             aimLocation.position = hit.point;
+                            aimLocation.parent = hit.transform;
                         }
                     }
                 }
@@ -128,9 +136,13 @@ public class Gun : MonoBehaviour
         }
         else if (!curve.IsPressed() && !newLocation)
             newLocation = true;
+
         if (!curve.IsPressed())
         {
             lr.positionCount = 0;
+            aimLocation.gameObject.SetActive(false);
+            xOffset = 0;
+            yOffset = 0;
         }
     }
 
@@ -142,6 +154,22 @@ public class Gun : MonoBehaviour
         if (isGamepad)
         {
             halfPoint += (cam.up * look.y + cam.right * look.x) * maxCurve * maxCurveModifier;
+        }
+        else
+        {
+            xOffset += look.x * Time.deltaTime;
+            yOffset += look.y * Time.deltaTime;
+
+            Vector2 temp = new Vector2(xOffset, yOffset);
+
+            if (temp.magnitude > 1)
+            {
+                temp = Vector2.ClampMagnitude(temp, 1);
+                xOffset = temp.x;
+                yOffset = temp.y;
+            }
+
+            halfPoint += (cam.up * yOffset + cam.right * xOffset) * maxCurve * maxCurveModifier;
         }
 
         return halfPoint;

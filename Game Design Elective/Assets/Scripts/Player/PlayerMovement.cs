@@ -70,7 +70,6 @@ public class PlayerMovement : MonoBehaviour
         rb = GetComponent<Rigidbody>();
         coll = GetComponent<CapsuleCollider>();
         collSizeDiff = (coll.height - coll.height * slideHeightMultiplier) / 2;
-        Debug.Log(collSizeDiff);
 
         MapControls();
     }

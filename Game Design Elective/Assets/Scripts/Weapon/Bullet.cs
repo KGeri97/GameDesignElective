@@ -14,11 +14,18 @@ public class Bullet : MonoBehaviour
     public Vector3 direction;
     float interpolateAmount = 0;
     float counter;
+    float distance;
 
-    void Update()
+    private void Start()
+    {
+        distance = Vector3.Distance(direction, transform.position);
+    }
+
+    void FixedUpdate()
     {
         //https://www.youtube.com/watch?v=7j_BNf9s0jM&ab_channel=CodeMonkey
-        interpolateAmount = (interpolateAmount + Time.deltaTime) % 1f;
+        interpolateAmount += Time.deltaTime * speed;
+        //interpolateAmount = (interpolateAmount + Time.deltaTime) % 1f;
         counter += Time.deltaTime;
 
         if (direction != default)

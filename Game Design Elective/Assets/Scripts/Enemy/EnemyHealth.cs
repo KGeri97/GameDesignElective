@@ -12,7 +12,14 @@ public class EnemyHealth : MonoBehaviour
     {
         if (health <= 0)
         {
-            Destroy(gameObject);
+            gameObject.SetActive(false);
+            Invoke("Respawn", 1);
         }
+    }
+
+    void Respawn()
+    {
+        health = 100;
+        gameObject.SetActive(true);
     }
 }
