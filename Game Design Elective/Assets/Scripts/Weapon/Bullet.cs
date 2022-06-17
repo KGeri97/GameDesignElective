@@ -18,21 +18,24 @@ public class Bullet : MonoBehaviour
     float interpolateAmount = 0;
     float counter;
     float distance;
+    float radius;
+    RaycastHit hit;
 
     private void Start()
     {
         distance = Vector3.Distance(origin, endPoint);
-        curveSpeed = 1 / distance * 50;
+        curveSpeed = 1 / distance * 80;
+        radius = GetComponent<SphereCollider>().radius * transform.localScale.x;
     }
 
-    void Update()
+    void FixedUpdate()
     {
         //https://www.youtube.com/watch?v=7j_BNf9s0jM&ab_channel=CodeMonkey
-        interpolateAmount += Time.deltaTime * curveSpeed;
+        interpolateAmount += Time.fixedDeltaTime * curveSpeed;
         if (interpolateAmount > 1)
             interpolateAmount = 1;
 
-        counter += Time.deltaTime;
+        counter += Time.fixedDeltaTime;
 
         if (direction != default)
         {
@@ -40,15 +43,28 @@ public class Bullet : MonoBehaviour
             {
                 Destroy(gameObject);
             }
-            transform.position += direction * speed * Time.deltaTime;
+
+            if (Physics.SphereCast(transform.position, radius, direction, out hit, Vector3.Distance(transform.position, transform.position + direction * speed * Time.fixedDeltaTime), enemyMask))
+            {
+                transform.position = hit.point;
+            }
+            else
+                transform.position += direction * speed * Time.fixedDeltaTime;
         }
         else
         {
             endPoint = marker.position;
             if (interpolateAmount >= 1)
-                Invoke("asd", 0.1f);
-            else 
-                transform.position = QuadraticLerp(origin, curveModifier, endPoint, interpolateAmount);
+                Invoke("asd", 0.05f);
+
+            Vector3 newPlace = QuadraticLerp(origin, curveModifier, endPoint, interpolateAmount);
+            if (Physics.SphereCast(transform.position, radius, newPlace - transform.position, out hit, Vector3.Distance(transform.position, newPlace), enemyMask))
+            {
+                transform.position = hit.point;
+            }
+            else
+                transform.position = newPlace;
+            
         }
     }
 
