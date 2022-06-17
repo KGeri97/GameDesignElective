@@ -25,6 +25,7 @@ public class CPBeginning : MonoBehaviour
     [SerializeField] GameObject txt41;
     [SerializeField] GameObject txt51;
     [SerializeField] GameObject txt52;
+    [SerializeField] GameObject txt53;
     [SerializeField] GameObject txt61;
     [SerializeField] GameObject txt6;
 
@@ -69,6 +70,7 @@ public class CPBeginning : MonoBehaviour
     public bool tutChallengeReached = false;
     GreenBarrier gBarrier;
     [SerializeField] bool noTut22 = true;
+    [SerializeField] bool noTut53 = false;
     float drainRate;
     float drainRateSlo;
 
@@ -106,6 +108,8 @@ public class CPBeginning : MonoBehaviour
         tut41();
         tut51();
         tut52();
+        //tut53();
+        tut61();
 
         SwitchController();
     }
@@ -228,7 +232,7 @@ public class CPBeginning : MonoBehaviour
             counter = 0;
         }
 
-        if (tutWallrunReached && counter > 5)
+        if (tutWallrunReached && counter > 2)
         {
             dashBarrier.triggered = false;
             txt15.SetActive(false);
@@ -244,7 +248,7 @@ public class CPBeginning : MonoBehaviour
             counter = 0;
         }
 
-        if (tutWallrunReached && pMove.wallRunning && counter > 5)
+        if (tutWallrunReached && pMove.wallRunning && counter > 2)
         {
             wallrunBarrier.triggered = false;
             txt21.SetActive(false);
@@ -261,7 +265,7 @@ public class CPBeginning : MonoBehaviour
             counter = 0;
         }
 
-        if (tutCombineReached && counter > 5)
+        if (tutCombineReached && counter > 2)
         {
             pRes.lastCheckpoint = cp3;
             txt22.SetActive(false);
@@ -277,7 +281,7 @@ public class CPBeginning : MonoBehaviour
             counter = 0;
         }
 
-        if (tutAdvancedWallrunReached && counter > 3)
+        if (tutAdvancedWallrunReached && counter > 2)
         {
             tutCombineReached = false;
             combineBarrier.triggered = false;
@@ -294,7 +298,7 @@ public class CPBeginning : MonoBehaviour
             noTut22 = true;
         }
 
-        if (tutEnemyReached && counter > 5)
+        if (tutEnemyReached && counter > 2)
         {
             pRes.lastCheckpoint = cp4;
             advancedWallrunBarrier.triggered = false;
@@ -344,37 +348,54 @@ public class CPBeginning : MonoBehaviour
 
     void tut52()
     {
-        if (!enemy4.activeSelf && (txt52.activeSelf || txt51.activeSelf))
+        if (!enemy4.activeSelf && (txt52.activeSelf || txt51.activeSelf) && greenBarrier.activeSelf)
         {
             txt52.SetActive(false);
             txt51.SetActive(false);
             pMove.jumpForce = jumpForce;
             greenBarrier.SetActive(false);
-            //pGun.canShoot = true;
+            pGun.canShoot = true;
             //txt6.SetActive(true);
+        }
+    }
+
+    void tut53()
+    {
+        if (!enemy4.activeSelf && !noTut53)
+        {
+            counter = 0;
+            txt52.SetActive(false);
+            txt51.SetActive(false);
+            txt53.SetActive(true);
+            pMove.jumpForce = jumpForce;
+            greenBarrier.SetActive(false);
+            noTut53 = true;
+            //Invoke("removeText(txt53)", 3);
         }
     }
 
     void tut61()
     {
 
-        if (tutChallengeReached && !txt61.activeSelf && !txt21.activeSelf)
+        if (pRes.lastCheckpoint != cp5 && tutChallengeReached && !txt61.activeSelf && !txt52.activeSelf)
         {
+            txt53.SetActive(false);
             pRes.lastCheckpoint = cp5;
             txt61.SetActive(true);
             counter = 0;
-        }
-
-        if (counter > 10)
-        {
-            txt61.SetActive(false);
+            pSlowMo.specialDrainRate = drainRate;
+            pSlowMo.specialDrainRateSlowMo = drainRateSlo;
+            challengeBarrier.triggered = false;
+            tutChallengeReached = false;
+            Invoke("removeText", 10);
+            pGun.canShoot = true;
         }
 
         bool isAllDead = true;
 
         foreach (GameObject enemy in enemiesChallenge)
         {
-            if (!enemy.activeSelf)
+            if (enemy.activeSelf)
                 isAllDead = false;
         }
 
@@ -382,5 +403,10 @@ public class CPBeginning : MonoBehaviour
         {
             txt6.SetActive(true);
         }
+    }
+
+    void removeText()
+    {
+        txt61.SetActive(false);
     }
 }

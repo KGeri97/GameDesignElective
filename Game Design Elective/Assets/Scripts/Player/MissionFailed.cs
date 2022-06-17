@@ -5,6 +5,7 @@ using UnityEngine;
 public class MissionFailed : MonoBehaviour
 {
     [SerializeField] GameObject text;
+    [SerializeField] List<GameObject> npc;
     float counter = 0;
 
     void Update()
@@ -21,6 +22,13 @@ public class MissionFailed : MonoBehaviour
         if (counter > 5)
         {
             text.SetActive(false);
+
+            foreach (GameObject n in npc)
+            {
+                n.SetActive(true);
+                n.GetComponent<EnemyHealth>().CancelInvoke();
+                n.GetComponent<EnemyHealth>().Invoke("Respawn", 2);
+            }
         }
     }
 }

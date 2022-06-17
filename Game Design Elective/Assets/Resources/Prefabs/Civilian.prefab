@@ -122,7 +122,7 @@ GameObject:
   - component: {fileID: 99849949583757245}
   m_Layer: 8
   m_Name: Civilian
-  m_TagString: Enemy
+  m_TagString: Civilian
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -158,6 +158,8 @@ MonoBehaviour:
   health: 100
   headDmgModifier: 1
   bodyDmgModifier: 0.4
+  respawnTimer: 5
+  missionFailedTxt: {fileID: 0}
 --- !u!1 &99849950672610710
 GameObject:
   m_ObjectHideFlags: 0

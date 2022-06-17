@@ -5,7 +5,7 @@ using UnityEngine;
 public class RespawnPlayer : MonoBehaviour
 {
     public Transform lastCheckpoint;
-    [SerializeField] GameObject missionFailedTxt;
+    [SerializeField] public GameObject missionFailedTxt;
 
     private void Update()
     {

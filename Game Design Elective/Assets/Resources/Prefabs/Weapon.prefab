@@ -142,6 +142,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   playerInput: {fileID: 0}
+  sloMoscript: {fileID: 0}
   bulletPrefab: {fileID: 3493379500363712818, guid: 00cdd520b1e797c4382ebb0e98914323, type: 3}
   firePoint: {fileID: 3079963625926011846}
   aimLocation: {fileID: 0}
@@ -150,6 +151,12 @@ MonoBehaviour:
     m_Bits: 960
   maxCurveModifier: 1
   fireRate: 0.2
+  range: 0
+  canShoot: 1
+  enemyMask:
+    serializedVersion: 2
+    m_Bits: 256
+  behindWallDistance: 5
   lineResolution: 50
   cam: {fileID: 0}
   orientation: {fileID: 0}
