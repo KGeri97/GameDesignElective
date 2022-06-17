@@ -53,8 +53,8 @@ public class PlayerCamera : MonoBehaviour
             GatherInput();
             if (isGamepad)
             {
-                xRotation += look.y * ySensitivity * gamepadMultiplier * 10 * Time.deltaTime;
-                yRotation += look.x * xSensitivity * gamepadMultiplier * 10 * Time.deltaTime;
+                xRotation += look.y * ySensitivity * gamepadMultiplier * 5 * Time.deltaTime * (0.5f + Mathf.Abs(look.y));
+                yRotation += look.x * xSensitivity * gamepadMultiplier * 5 * Time.deltaTime * (0.5f + Mathf.Abs(look.x));
             }
             else
             {

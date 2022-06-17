@@ -44,7 +44,7 @@ public class Bullet : MonoBehaviour
                 Destroy(gameObject);
             }
 
-            if (Physics.SphereCast(transform.position, radius, direction, out hit, Vector3.Distance(transform.position, transform.position + direction * speed * Time.fixedDeltaTime), enemyMask))
+            if (Physics.SphereCast(transform.position, radius, direction, out hit, Vector3.Distance(transform.position, transform.position + direction * speed * Time.fixedDeltaTime), enemyMask + bulletMask))
             {
                 transform.position = hit.point;
             }
@@ -58,7 +58,7 @@ public class Bullet : MonoBehaviour
                 Invoke("asd", 0.05f);
 
             Vector3 newPlace = QuadraticLerp(origin, curveModifier, endPoint, interpolateAmount);
-            if (Physics.SphereCast(transform.position, radius, newPlace - transform.position, out hit, Vector3.Distance(transform.position, newPlace), enemyMask))
+            if (Physics.SphereCast(transform.position, radius, newPlace - transform.position, out hit, Vector3.Distance(transform.position, newPlace), enemyMask + bulletMask))
             {
                 transform.position = hit.point;
             }

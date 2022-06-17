@@ -8,13 +8,21 @@ public class EnemyHealth : MonoBehaviour
     [SerializeField] public float headDmgModifier;
     [SerializeField] public float bodyDmgModifier;
     [SerializeField] float respawnTimer;
+    [SerializeField] GameObject missionFailedTxt;
 
     private void Update()
     {
         if (health <= 0)
         {
-            gameObject.SetActive(false);
-            Invoke("Respawn", respawnTimer);
+            if (tag != "Enemy")
+            {
+                gameObject.SetActive(false);
+                Invoke("Respawn", respawnTimer);
+            }
+            else
+            {
+                missionFailedTxt.SetActive(true);
+            }
         }
     }
 

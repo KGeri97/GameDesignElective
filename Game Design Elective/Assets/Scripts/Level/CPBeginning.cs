@@ -9,6 +9,8 @@ public class CPBeginning : MonoBehaviour
     [SerializeField] PlayerMovement pMove;
     [SerializeField] PlayerCamera pCam;
     [SerializeField] Gun pGun;
+    [SerializeField] SlowMotion pSlowMo;
+    [SerializeField] RespawnPlayer pRes;
     
     [Header("Texts Gamepad")]
     [SerializeField] GameObject txt11;
@@ -18,10 +20,12 @@ public class CPBeginning : MonoBehaviour
     [SerializeField] GameObject txt15;
     [SerializeField] GameObject txt21;
     [SerializeField] GameObject txt22;
+    [SerializeField] GameObject txt23;
     [SerializeField] GameObject txt31;
     [SerializeField] GameObject txt41;
     [SerializeField] GameObject txt51;
     [SerializeField] GameObject txt52;
+    [SerializeField] GameObject txt61;
     [SerializeField] GameObject txt6;
 
     [Header("Barriers")]
@@ -29,9 +33,11 @@ public class CPBeginning : MonoBehaviour
     [SerializeField] Barrier slideBarrier;
     [SerializeField] Barrier dashBarrier;
     [SerializeField] Barrier wallrunBarrier;
+    [SerializeField] Barrier combineBarrier;
     [SerializeField] Barrier advancedWallrunBarrier;
     [SerializeField] Barrier enemyBarrier;
     [SerializeField] Barrier advancedEnemyBarrier;
+    [SerializeField] Barrier challengeBarrier;
     [SerializeField] GameObject greenBarrier;
     [SerializeField] GameObject wall;
 
@@ -40,6 +46,14 @@ public class CPBeginning : MonoBehaviour
     [SerializeField] GameObject enemy2;
     [SerializeField] GameObject enemy3;
     [SerializeField] GameObject enemy4;
+    [SerializeField] List<GameObject> enemiesChallenge;
+
+    [Header("Checkpoints")]
+    [SerializeField] Transform cp1;
+    [SerializeField] Transform cp2;
+    [SerializeField] Transform cp3;
+    [SerializeField] Transform cp4;
+    [SerializeField] Transform cp5;
 
     [Header("Markers")]
     public bool tutLook = false;
@@ -48,10 +62,15 @@ public class CPBeginning : MonoBehaviour
     public bool tutSlideReached = false;
     public bool tutDashReached = false;
     public bool tutWallrunReached = false;
+    public bool tutCombineReached = false;
     public bool tutAdvancedWallrunReached = false;
     public bool tutEnemyReached = false;
     public bool tutAdvancedEnemyReached = false;
+    public bool tutChallengeReached = false;
+    GreenBarrier gBarrier;
     [SerializeField] bool noTut22 = true;
+    float drainRate;
+    float drainRateSlo;
 
     float counter;
 
@@ -62,6 +81,11 @@ public class CPBeginning : MonoBehaviour
     private void Start()
     {
         getBasicValues();
+
+        gBarrier = greenBarrier.GetComponent<GreenBarrier>();
+
+        pSlowMo.specialDrainRate = 0;
+        pSlowMo.specialDrainRateSlowMo = 0;
     }
 
     private void Update()
@@ -77,6 +101,7 @@ public class CPBeginning : MonoBehaviour
         tut15();
         tut21();
         tut22();
+        tut23();
         tut31();
         tut41();
         tut51();
@@ -88,6 +113,8 @@ public class CPBeginning : MonoBehaviour
     void getBasicValues()
     {
         jumpForce = pMove.jumpForce;
+        drainRate = pSlowMo.specialDrainRate;
+        drainRateSlo = pSlowMo.specialDrainRateSlowMo;
     }
 
     void SwitchController()
@@ -112,6 +139,9 @@ public class CPBeginning : MonoBehaviour
         if (wallrunBarrier.triggered)
             tutWallrunReached = true;
 
+        if (combineBarrier.triggered)
+            tutCombineReached = true;
+
         if (advancedWallrunBarrier.triggered)
             tutAdvancedWallrunReached = true;
 
@@ -120,12 +150,16 @@ public class CPBeginning : MonoBehaviour
 
         if (advancedEnemyBarrier.triggered)
             tutAdvancedEnemyReached = true;
+
+        if (challengeBarrier.triggered)
+            tutChallengeReached = true;
     }
 
     void tut11()
     {
         if (!tutLook && !txt11.activeSelf)
         {
+            pRes.lastCheckpoint = cp1;
             txt11.SetActive(true);
             counter = 0;
         }
@@ -179,6 +213,7 @@ public class CPBeginning : MonoBehaviour
 
         if (tutDashReached && counter > 2)
         {
+            pRes.lastCheckpoint = cp2;
             slideBarrier.triggered = false;
             txt14.SetActive(false);
             tutSlideReached = false;
@@ -226,16 +261,33 @@ public class CPBeginning : MonoBehaviour
             counter = 0;
         }
 
-        if (tutAdvancedWallrunReached && counter > 5)
+        if (tutCombineReached && counter > 5)
         {
+            pRes.lastCheckpoint = cp3;
             txt22.SetActive(false);
             noTut22 = true;
         }
     }
 
+    void tut23()
+    {
+        if (tutCombineReached && !txt22.activeSelf && !txt23.activeSelf)
+        {
+            txt23.SetActive(true);
+            counter = 0;
+        }
+
+        if (tutAdvancedWallrunReached && counter > 3)
+        {
+            tutCombineReached = false;
+            combineBarrier.triggered = false;
+            txt23.SetActive(false);
+        }
+    }
+
     void tut31()
     {
-        if (tutAdvancedWallrunReached && !txt31.activeSelf && !txt22.activeSelf)
+        if (tutAdvancedWallrunReached && !txt31.activeSelf && !txt23.activeSelf)
         {
             txt31.SetActive(true);
             counter = 0;
@@ -244,6 +296,7 @@ public class CPBeginning : MonoBehaviour
 
         if (tutEnemyReached && counter > 5)
         {
+            pRes.lastCheckpoint = cp4;
             advancedWallrunBarrier.triggered = false;
             txt31.SetActive(false);
             tutAdvancedWallrunReached = false;
@@ -278,7 +331,7 @@ public class CPBeginning : MonoBehaviour
             pGun.canShoot = false;
         }
 
-        if (txt51.activeSelf && counter > 5)
+        if (txt51.activeSelf && counter > 5 && gBarrier.triggered)
         {
             greenBarrier.SetActive(true);
             advancedEnemyBarrier.triggered = false;
@@ -297,7 +350,36 @@ public class CPBeginning : MonoBehaviour
             txt51.SetActive(false);
             pMove.jumpForce = jumpForce;
             greenBarrier.SetActive(false);
-            pGun.canShoot = true;
+            //pGun.canShoot = true;
+            //txt6.SetActive(true);
+        }
+    }
+
+    void tut61()
+    {
+
+        if (tutChallengeReached && !txt61.activeSelf && !txt21.activeSelf)
+        {
+            pRes.lastCheckpoint = cp5;
+            txt61.SetActive(true);
+            counter = 0;
+        }
+
+        if (counter > 10)
+        {
+            txt61.SetActive(false);
+        }
+
+        bool isAllDead = true;
+
+        foreach (GameObject enemy in enemiesChallenge)
+        {
+            if (!enemy.activeSelf)
+                isAllDead = false;
+        }
+
+        if (isAllDead)
+        {
             txt6.SetActive(true);
         }
     }
